@@ -12,24 +12,24 @@ import sys
 import json
 
 
-def parse_dev_plan(file_path='DEV_PLAN.md'):
+def parse_dev_plan(file_path="DEV_PLAN.md"):
     """Parse the development plan markdown file and extract issues."""
 
-    with open(file_path, 'r') as f:
+    with open(file_path, "r") as f:
         content = f.read()
 
     issues = []
     current_issue = None
 
     # Split by lines for processing
-    lines = content.split('\n')
+    lines = content.split("\n")
     i = 0
 
     while i < len(lines):
         line = lines[i]
 
         # Match issue headers like "### Issue 1.1: Title"
-        issue_match = re.match(r'^###\s+Issue\s+([\d.]+):\s+(.+)$', line)
+        issue_match = re.match(r"^###\s+Issue\s+([\d.]+):\s+(.+)$", line)
 
         if issue_match:
             # Save previous issue if exists
@@ -41,11 +41,11 @@ def parse_dev_plan(file_path='DEV_PLAN.md'):
             issue_title = issue_match.group(2)
 
             current_issue = {
-                'number': issue_number,
-                'title': f"[{issue_number}] {issue_title}",
-                'body': [],
-                'labels': [],
-                'estimate': None
+                "number": issue_number,
+                "title": f"[{issue_number}] {issue_title}",
+                "body": [],
+                "labels": [],
+                "estimate": None,
             }
 
             i += 1
@@ -54,28 +54,34 @@ def parse_dev_plan(file_path='DEV_PLAN.md'):
         # If we're inside an issue, collect its content
         if current_issue:
             # Match labels line
-            labels_match = re.match(r'^\*\*Labels\*\*:\s+(.+)$', line)
+            labels_match = re.match(r"^\*\*Labels\*\*:\s+(.+)$", line)
             if labels_match:
                 labels_str = labels_match.group(1)
-                current_issue['labels'] = [label.strip() for label in labels_str.split(',')]
+                current_issue["labels"] = [
+                    label.strip() for label in labels_str.split(",")
+                ]
                 i += 1
                 continue
 
             # Match estimate line
-            estimate_match = re.match(r'^\*\*Estimate\*\*:\s+(.+)$', line)
+            estimate_match = re.match(r"^\*\*Estimate\*\*:\s+(.+)$", line)
             if estimate_match:
-                current_issue['estimate'] = estimate_match.group(1)
+                current_issue["estimate"] = estimate_match.group(1)
                 i += 1
                 continue
 
             # Stop collecting body when we hit the next issue or section
-            if line.startswith('###') or line.startswith('---') or line.startswith('##'):
+            if (
+                line.startswith("###")
+                or line.startswith("---")
+                or line.startswith("##")
+            ):
                 i += 1
                 continue
 
             # Collect body content
             if line.strip():  # Skip empty lines at the start
-                current_issue['body'].append(line)
+                current_issue["body"].append(line)
 
         i += 1
 
@@ -88,24 +94,24 @@ def parse_dev_plan(file_path='DEV_PLAN.md'):
 
 def format_issue_body(issue):
     """Format the issue body with metadata."""
-    body_lines = issue['body']
+    body_lines = issue["body"]
 
     # Add estimate to body if present
-    if issue['estimate']:
+    if issue["estimate"]:
         body_lines.append(f"\n**Estimated Time**: {issue['estimate']}")
 
     # Add reference to dev plan
     body_lines.append(f"\n---\n*This issue was generated from DEV_PLAN.md*")
 
-    return '\n'.join(body_lines)
+    return "\n".join(body_lines)
 
 
 def create_github_issue(issue, dry_run=False):
     """Create a GitHub issue using the gh CLI."""
 
-    title = issue['title']
+    title = issue["title"]
     body = format_issue_body(issue)
-    labels = issue['labels']
+    labels = issue["labels"]
 
     if dry_run:
         print(f"\n{'='*60}")
@@ -117,11 +123,11 @@ def create_github_issue(issue, dry_run=False):
         return True
 
     # Build gh command
-    cmd = ['gh', 'issue', 'create', '--title', title, '--body', body]
+    cmd = ["gh", "issue", "create", "--title", title, "--body", body]
 
     # Add labels
     for label in labels:
-        cmd.extend(['--label', label])
+        cmd.extend(["--label", label])
 
     try:
         result = subprocess.run(cmd, check=True, capture_output=True, text=True)
@@ -135,7 +141,7 @@ def create_github_issue(issue, dry_run=False):
 
 
 def main():
-    dry_run = '--dry-run' in sys.argv
+    dry_run = "--dry-run" in sys.argv
 
     if dry_run:
         print("DRY RUN MODE - No issues will be created\n")
@@ -147,7 +153,7 @@ def main():
 
     if not dry_run:
         response = input("Create these issues on GitHub? (y/n): ")
-        if response.lower() != 'y':
+        if response.lower() != "y":
             print("Cancelled.")
             return
 
@@ -166,5 +172,5 @@ def main():
     print(f"{'='*60}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
