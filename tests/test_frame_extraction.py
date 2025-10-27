@@ -89,9 +89,7 @@ def test_frame_extraction():
     # Test 1: Extract frames at 1 fps
     print("\n--- Test 1: Extract frames at 1 fps ---")
     output_1fps = output_base / "frames_1fps"
-    result_1fps = extract_frames(
-        video_path=test_video, output_dir=output_1fps, fps=1.0
-    )
+    result_1fps = extract_frames(video_path=test_video, output_dir=output_1fps, fps=1.0)
 
     if result_1fps["success"]:
         print(f"✓ Extracted {result_1fps['frame_count']} frames")
@@ -113,9 +111,7 @@ def test_frame_extraction():
     # Test 2: Extract frames at 5 fps
     print("\n--- Test 2: Extract frames at 5 fps ---")
     output_5fps = output_base / "frames_5fps"
-    result_5fps = extract_frames(
-        video_path=test_video, output_dir=output_5fps, fps=5.0
-    )
+    result_5fps = extract_frames(video_path=test_video, output_dir=output_5fps, fps=5.0)
 
     if result_5fps["success"]:
         print(f"✓ Extracted {result_5fps['frame_count']} frames")

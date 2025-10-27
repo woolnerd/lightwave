@@ -163,7 +163,8 @@ if __name__ == "__main__":
     print("=" * 50)
     print("\nThis module provides frame extraction utilities.")
     print("\nExample usage:")
-    print("""
+    print(
+        """
 from frame_extractor import extract_frames, get_video_info
 
 # Get video info
@@ -177,4 +178,5 @@ result = extract_frames(
     fps=1.0
 )
 print(f"Extracted {result['frame_count']} frames")
-    """)
+    """
+    )
